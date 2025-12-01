@@ -96,6 +96,8 @@ def initialize_game_state():
         st.session_state.num_players = 2
     if 'players' not in st.session_state:
         st.session_state.players = []
+    if 'player_names' not in st.session_state:
+        st.session_state.player_names = {}
     if 'current_player_idx' not in st.session_state:
         st.session_state.current_player_idx = 0
     if 'puzzle' not in st.session_state:
@@ -115,7 +117,7 @@ def start_new_game():
     """Start a new game with selected number of players"""
     st.session_state.game_started = True
     st.session_state.players = [
-        {'name': f'Player {i+1}', 'score': 0, 'round_earnings': 0}
+        {'name': st.session_state.player_names.get(i, f'Player {i+1}'), 'score': 0, 'round_earnings': 0}
         for i in range(st.session_state.num_players)
     ]
     st.session_state.current_player_idx = 0
@@ -351,6 +353,17 @@ def main():
                 options=[1, 2, 3, 4],
                 index=1
             )
+            
+            st.subheader("Player Names")
+            for i in range(st.session_state.num_players):
+                default_name = st.session_state.player_names.get(i, f"Player {i+1}")
+                player_name = st.text_input(
+                    f"Player {i+1} Name:",
+                    value=default_name,
+                    key=f"player_name_{i}"
+                )
+                if player_name.strip():
+                    st.session_state.player_names[i] = player_name.strip()
             
             if st.button("Start New Game", type="primary", use_container_width=True):
                 start_new_game()
